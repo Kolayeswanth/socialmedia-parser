@@ -1,4 +1,3 @@
-// File: main.js
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const InstagramBot = require("./instagramBot");
@@ -67,5 +66,11 @@ app.whenReady().then(createWindow);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (mainWindow === null) {
+    createWindow();
   }
 });
