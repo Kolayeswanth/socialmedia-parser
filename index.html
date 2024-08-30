@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Social Media</title>
+    <title>Social Media Bot</title>
     <style>
         .card {
             border: 1px solid #ccc;
@@ -18,12 +18,17 @@
 <body>
     <h1>Select a Social Media Platform</h1>
     <div class="card" id="instagramCard">Instagram</div>
+    <div class="card" id="facebookCard">Facebook</div>
     <div class="card" id="whatsappCard">WhatsApp</div>
     <!-- Add more cards as needed -->
 
     <script>
         document.getElementById("instagramCard").addEventListener("click", () => {
             window.location.href = "instagram.html";
+        });
+
+        document.getElementById("facebookCard").addEventListener("click", () => {
+            window.location.href = "facebook.html";
         });
     </script>
 </body>

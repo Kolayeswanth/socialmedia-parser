@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Instagram Bot</title>
+    <title>Facebook Bot</title>
     <style>
         #logs {
             border: 1px solid #ccc;
@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <h1>Instagram Bot</h1>
+    <h1>Facebook Bot</h1>
     <form id="loginForm">
         <div>
             <label for="username">Username:</label>
@@ -45,7 +45,7 @@
             const password = document.getElementById("password").value;
 
             try {
-                const result = await ipcRenderer.invoke("start-instagram-bot", {
+                const result = await ipcRenderer.invoke("start-facebook-bot", {
                     username,
                     password,
                 });
