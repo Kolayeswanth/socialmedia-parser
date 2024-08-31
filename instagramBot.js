@@ -4,11 +4,11 @@ const fs = require("fs").promises;
 const path = require("path");
 
 class InstagramBot {
-  constructor(username, password, sendLog, waitForTwoFactorCode) {
+  constructor(username, password, sendLog, waitForTwoFactorCodei) {
     this.username = username;
     this.password = password;
     this.sendLog = sendLog;
-    this.waitForTwoFactorCode = waitForTwoFactorCode;
+    this.waitForTwoFactorCodei = waitForTwoFactorCodei;
   }
 
   async init() {
@@ -38,7 +38,7 @@ class InstagramBot {
     // Check for 2FA page
     if (this.page.url().includes("two_factor")) {
       this.sendLog("2FA page detected.");
-      const code = await this.waitForTwoFactorCode();
+      const code = await this.waitForTwoFactorCodei();
       await this.page.type('input[name="verificationCode"]', code, {
         delay: 100,
       });
