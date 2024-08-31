@@ -2,3 +2,4 @@ node_modules/
 files/instagram/*
 files/facebook/*
 !files/.gitkeep/
+files/twitter/*

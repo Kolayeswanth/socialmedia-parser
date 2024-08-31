@@ -3,15 +3,18 @@ const fs = require("fs").promises;
 const path = require("path");
 
 class TwitterBot {
-  constructor(username, password, sendLog, waitForTwoFactorCode) {
+  constructor(username, password, sendLog, waitForVerificationInput) {
     this.username = username;
     this.password = password;
     this.sendLog = sendLog;
-    this.waitForTwoFactorCode = waitForTwoFactorCode;
+    this.waitForVerificationInput = waitForVerificationInput;
   }
 
   async init() {
-    this.browser = await puppeteer.launch({ headless: false });
+    this.browser = await puppeteer.launch({
+      headless: true,
+      args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-gpu'],
+    });
     this.page = await this.browser.newPage();
     await this.page.setViewport({ width: 1920, height: 1080 });
   }
@@ -20,117 +23,183 @@ class TwitterBot {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  async waitForSelectorWithRetry(selector, options = {}) {
+    const maxRetries = 3;
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        await this.page.waitForSelector(selector, { ...options, timeout: 15000 });
+        return;
+      } catch (error) {
+        if (i === maxRetries - 1) throw error;
+        await this.delay(2000);
+      }
+    }
+  }
+
   async login() {
     try {
       this.sendLog("Navigating to login page...");
-      await this.page.goto("https://x.com/i/flow/login", { waitUntil: "networkidle2", timeout: 30000 });
-
-      this.sendLog("Current URL: " + this.page.url());
-      await this.page.screenshot({ path: 'initial-page.png' });
-
-      // Wait for and enter username or email
-      this.sendLog("Waiting for username field...");
-      const usernameSelector = 'input[autocomplete="username"], input[name="text"], input[type="text"]';
-      await this.page.waitForSelector(usernameSelector, { timeout: 15000 });
+      await this.page.goto("https://x.com/i/flow/login", { waitUntil: "networkidle2", timeout: 60000 });
+  
       this.sendLog("Entering username...");
-      await this.page.type(usernameSelector, this.username, { delay: 100 });
-
-      // Use Tab key navigation to focus on the "Next" button
-      this.sendLog("Using Tab key to navigate to 'Next' button...");
-      await this.page.keyboard.press('Tab');
-      await this.delay(500); // Short delay between tabs
-
-      // Press Enter to click the focused "Next" button
-      this.sendLog("Pressing Enter to click 'Next' button...");
+      const initialInputSelector = 'input[autocomplete="username"], input[name="text"], input[type="text"]';
+      await this.waitForSelectorWithRetry(initialInputSelector);
+      await this.page.type(initialInputSelector, this.username, { delay: 100 });
+  
       await this.page.keyboard.press('Enter');
-
-      // Wait for password field or 2FA modal
-      const passwordField = await this.page.waitForSelector('input[type="password"]', { timeout: 15000 }).catch(() => null);
-      
-      if (!passwordField) {
-        // Check if 2FA modal appeared
-        const twoFactorModal = await this.page.waitForSelector('input[autocomplete="off"]', { timeout: 15000 }).catch(() => null);
-        if (twoFactorModal) {
-          this.sendLog("2FA modal detected. Asking for additional input...");
-          const secondFactor = await this.waitForTwoFactorCode();
-          this.sendLog("Entering provided " + secondFactor + "...");
-          await this.page.type('input[autocomplete="off"]', secondFactor, { delay: 100 });
-          await this.page.keyboard.press('Enter');
-          
-          // Wait for password field again
-          this.sendLog("Waiting for password field after entering 2FA...");
-          await this.page.waitForSelector('input[type="password"]', { timeout: 15000 });
-        } else {
-          throw new Error("Password field not found, and 2FA modal did not appear.");
-        }
+      await this.delay(3000);
+  
+      const passwordSelector = 'input[type="password"]';
+      const verificationSelector = 'input[autocomplete="on"]';
+  
+      await Promise.race([
+        this.waitForSelectorWithRetry(passwordSelector),
+        this.waitForSelectorWithRetry(verificationSelector)
+      ]);
+  
+      if (await this.page.$(passwordSelector)) {
+        this.sendLog("Entering password...");
+        await this.page.type(passwordSelector, this.password, { delay: 100 });
+        await this.page.keyboard.press('Enter');
+      } else if (await this.page.$(verificationSelector)) {
+        this.sendLog("Additional verification required...");
+        const verificationInfo = await this.waitForVerificationInput("Please enter the required verification information (email or phone):");
+        await this.page.type(verificationSelector, verificationInfo, { delay: 100 });
+        await this.page.keyboard.press('Enter');
+  
+        await this.waitForSelectorWithRetry(passwordSelector);
+        this.sendLog("Entering password...");
+        await this.page.type(passwordSelector, this.password, { delay: 100 });
+        await this.page.keyboard.press('Enter');
       }
-
-      // Enter password
-      this.sendLog("Entering password...");
-      await this.page.type('input[type="password"]', this.password, { delay: 100 });
-
-      // Use Tab key navigation to focus on the "Log in" button
-      this.sendLog("Using Tab key to navigate to 'Log in' button...");
-      for (let i = 0; i < 3; i++) {
-        await this.page.keyboard.press('Tab');
-        await this.delay(500); // Short delay between tabs
+  
+      await this.delay(5000);
+  
+      const twoFactorSelector = 'input[autocomplete="one-time-code"]';
+      if (await this.page.$(twoFactorSelector)) {
+        const code = await this.waitForVerificationInput("Please enter the 2FA code:");
+        await this.page.type(twoFactorSelector, code, { delay: 100 });
+        await this.page.keyboard.press('Enter');
       }
-
-      // Press Enter to click the focused "Log in" button
-      this.sendLog("Pressing Enter to click 'Log in' button...");
-      await this.page.keyboard.press('Enter');
-      await this.page.waitForNavigation({ waitUntil: "networkidle2" });
-
-      // Handle 2FA if required after entering the password
-      const twoFactorInput = await this.page.waitForSelector('input[autocomplete="one-time-code"]', { timeout: 15000 }).catch(() => null);
-      if (twoFactorInput) {
-        this.sendLog("2FA required. Waiting for user to input the code...");
-        const code = await this.waitForTwoFactorCode();
-        await this.page.type('input[autocomplete="one-time-code"]', code, { delay: 100 });
-        this.sendLog("Submitting 2FA code...");
-        await Promise.all([
-          this.page.keyboard.press('Enter'),
-          this.page.waitForNavigation({ waitUntil: "networkidle2" }),
-        ]);
-      }
-
-      // Check if login was successful
-      if (this.page.url().includes("login") || this.page.url().includes("error")) {
-        await this.page.screenshot({ path: 'login-failed.png' });
-        throw new Error("Failed to log in. Please check your credentials.");
-      }
-
-      this.sendLog("Successfully logged in!");
-
+  
+      this.sendLog("Waiting for login to complete...");
+      await this.waitForLoginSuccess();
+  
+      this.sendLog("Login successful!");
+  
     } catch (error) {
       this.sendLog("Login error: " + error.message);
       await this.page.screenshot({ path: 'login-error.png' });
       throw error;
     }
   }
+  
+  async waitForLoginSuccess(timeout = 60000) {
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeout) {
+      if (await this.isLoggedIn()) {
+        return true;
+      }
+      await this.delay(1000);
+    }
+    throw new Error("Login success not detected within the timeout period");
+  }
+  
+  async isLoggedIn() {
+    try {
+      const homeButton = await this.page.$('a[aria-label="Home"]');
+      const profileButton = await this.page.$('a[aria-label="Profile"]');
+      const tweetButton = await this.page.$('a[aria-label="Tweet"]');
+  
+      if (homeButton && profileButton && tweetButton) {
+        return true;
+      }
+  
+      const currentUrl = this.page.url();
+      if (currentUrl === "https://x.com/home") {
+        return true;
+      }
+  
+      return false;
+    } catch (error) {
+      this.sendLog("Error checking login status: " + error.message);
+      return false;
+    }
+  }
 
-  async takeScreenshot(section, fileName) {
-    const screenshotPath = path.join(__dirname, "screenshots", fileName + ".png");
+  async takeFullPageScreenshot(fileName) {
+    const screenshotPath = path.join(__dirname, "files", "twitter", this.username, fileName + ".png");
     await fs.mkdir(path.dirname(screenshotPath), { recursive: true });
-    this.sendLog("Taking screenshot of " + section + "...");
-    await this.page.screenshot({ path: screenshotPath });
-    this.sendLog("Screenshot saved as " + fileName + ".png");
+    await this.page.screenshot({ path: screenshotPath, fullPage: true });
+    this.sendLog("Screenshot saved: " + fileName);
+  }
+
+  async takeProfileScreenshot(username) {
+    this.sendLog("Taking profile screenshot...");
+    const profileDir = path.join(__dirname, "files", "twitter", username);
+    await fs.mkdir(profileDir, { recursive: true });
+    const profileScreenshotPath = path.join(profileDir, `${username}_full_profile.png`);
+    await this.takeFullPageScreenshot(profileScreenshotPath);
+  }
+
+  async captureFollowersAndFollowing() {
+    try {
+      // Capture followers list
+      this.sendLog("Capturing followers list...");
+      await this.page.goto(`https://x.com/${this.username}/followers`, { waitUntil: "networkidle2" });
+
+      // Wait for the list to load completely
+      await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
+      await this.takeFullPageScreenshot("followers");
+
+      // Capture following list
+      this.sendLog("Capturing following list...");
+      await this.page.goto(`https://x.com/${this.username}/following`, { waitUntil: "networkidle2" });
+
+      // Wait for the list to load completely
+      await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
+      await this.takeFullPageScreenshot("following");
+
+    } catch (error) {
+      this.sendLog("Error capturing followers or following list: " + error.message);
+      await this.page.screenshot({ path: 'capture-error.png' });
+      throw error;
+    }
+  }
+
+  async navigateToProfile() {
+    try {
+      this.sendLog("Navigating to profile page...");
+      await this.page.goto(`https://x.com/${this.username}`, { waitUntil: "domcontentloaded", timeout: 60000 });
+
+      await this.page.waitForSelector('section[role="region"]', { timeout: 15000 });
+      this.sendLog("Profile page loaded successfully.");
+    } catch (error) {
+      this.sendLog("Error loading profile page: " + error.message);
+      await this.page.screenshot({ path: 'profile-loading-error.png' });
+      throw new Error("Failed to load profile page.");
+    }
   }
 
   async run() {
     try {
       await this.init();
       await this.login();
+      await this.navigateToProfile();
+      await this.takeFullPageScreenshot("profile");
 
-      // Example of taking screenshots after login
-      await this.page.goto("https://twitter.com/home", { waitUntil: "networkidle2" });
-      await this.takeScreenshot("Home Page", "home");
+      // Capture followers and following lists
+      await this.captureFollowersAndFollowing();
+
     } catch (error) {
-      throw new Error("Bot run failed: " + error.message);
+      this.sendLog("Bot run failed: " + error.message);
     } finally {
       this.sendLog("Closing browser...");
       if (this.browser) {
         await this.browser.close();
+        this.sendLog("Closed browser successfully...");
       }
     }
   }
