@@ -56,7 +56,14 @@ function waitForTwoFactorCode() {
     });
   });
 }
-
+function waitForTwoFactorCodei() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send("show-2fa-input");
+    ipcMain.once("submit-2fa-code", (_event, code) => {
+      resolve(code);
+    });
+  });
+}
 ipcMain.handle(
   "start-instagram-bot",
   async (_event, { username, password }) => {
@@ -69,7 +76,7 @@ ipcMain.handle(
         username,
         password,
         sendLog,
-        waitForTwoFactorCode
+        waitForTwoFactorCodei
       );
       await bot.run();
       return { success: true };

@@ -151,6 +151,7 @@ class TwitterBot {
       // Wait for the list to load completely
       await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
       await this.delay(5000);  // Additional delay to ensure all elements are loaded
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
       await this.takeFullPageScreenshot("followers");
 
       // Capture following list
@@ -160,11 +161,11 @@ class TwitterBot {
       // Wait for the list to load completely
       await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
       await this.delay(5000);  // Additional delay to ensure all elements are loaded
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
       await this.takeFullPageScreenshot("following");
 
     } catch (error) {
       this.sendLog("Error capturing followers or following list: " + error.message);
-      await this.page.screenshot({ path: 'capture-error.png' });
       throw error;
     }
   }
