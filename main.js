@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const InstagramBot = require("./instagramBot");
 const FacebookBot = require("./facebookBot");
-const TwitterBot = require("./t");
+const TwitterBot = require("./twitterBot");
 
 let mainWindow;
 
