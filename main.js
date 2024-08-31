@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const InstagramBot = require("./instagramBot");
 const FacebookBot = require("./facebookBot");
+const TwitterBot = require("./twitterBot");
+
 
 let mainWindow;
 
@@ -23,13 +25,13 @@ function createWindow() {
 
 function waitForTwoFactorCode() {
   return new Promise((resolve) => {
-    ipcMain.once("submit-2fa-code", (event, code) => {
+    ipcMain.once("submit-2fa-code", (_event, code) => {
       resolve(code);
     });
   });
 }
 
-ipcMain.handle("start-instagram-bot", async (event, { username, password }) => {
+ipcMain.handle("start-instagram-bot", async (_event, { username, password }) => {
   const sendLog = (message) => {
     mainWindow.webContents.send("update-logs", message);
   };
@@ -45,7 +47,7 @@ ipcMain.handle("start-instagram-bot", async (event, { username, password }) => {
   }
 });
 
-ipcMain.handle("start-facebook-bot", async (event, { username, password }) => {
+ipcMain.handle("start-facebook-bot", async (_event, { username, password }) => {
   const sendLog = (message) => {
     mainWindow.webContents.send("update-logs", message);
   };
@@ -60,7 +62,21 @@ ipcMain.handle("start-facebook-bot", async (event, { username, password }) => {
     return { success: false, error: error.message };
   }
 });
+ipcMain.handle("start-twitter-bot", async (_event, { username, password }) => {
+  const sendLog = (message) => {
+    mainWindow.webContents.send("update-logs", message);
+  };
 
+  try {
+    const bot = new TwitterBot(username, password, sendLog, waitForTwoFactorCode);
+    await bot.run();
+    return { success: true };
+  } catch (error) {
+    sendLog(`Error: ${error.message}`);
+    console.error("Error occurred in Twitter bot:", error);
+    return { success: false, error: error.message };
+  }
+});
 app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
