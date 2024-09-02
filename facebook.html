@@ -4,63 +4,239 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Facebook Bot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Capriola:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        #logs {
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #4d4d4d;
+            text-decoration: none;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-family: 'Capriola', sans-serif;
+            color: #4d4d4d;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin: 0;
+            background-color: #F2F6FB;
+        }
+
+        div {
+            margin-bottom: 20px; /* Reduced padding between form elements */
+            text-align: left;
+            position: relative;
+        }
+
+        label {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            border-radius: 15px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="text"]#verification-input {
+            width: calc(100% - 30px);
+            padding: 10px; /* Reduced padding */
+            border-radius: 15px;
             border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #ab47bc;
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -20px;
+            left: 15px;
+            color: transparent;
+        }
+
+        button {
+            background-color:#1877F2; /* Facebook blue */
+            color: white;
+            border: none;
             padding: 10px;
-            height: 300px;
-            overflow-y: auto;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #verification-input {
+            display: none;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            font-size: 16px;
+            width: calc(100% - 30px);
+        }
+
+        #submit-verification {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #verification-prompt {
+            display: none;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #empty-space {
+            width: 100%;
+            max-width: 400px;
+            height: calc(100vh - 100px - 30px - 30px - 30px - 20px); /* Increased height */
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            margin-top: 0; /* No extra margin between form and empty space */
+            position: relative;
+        }
+
+        .dustbin-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .dustbin-icon:hover {
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <h1>Facebook Bot</h1>
-    <form id="loginForm">
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required />
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required />
-        </div>
-        <button type="submit" id="submitBtn">Start Bot</button>
-    </form>
-    <input type="text" id="two-factor-code" placeholder="Enter 2FA Code" style="display: none;" />
-    <button id="submit-2fa-code" style="display: none;">Submit 2FA Code</button>
-
-    <div id="result"></div>
-    <div id="logs"></div>
+    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
+    <div id="container">
+        <h1>Facebook Bot</h1>
+        <form id="loginForm">
+            <div>
+                <input type="text" id="username" name="username" required placeholder=" " />
+                <label for="username">Username</label>
+            </div>
+            <div>
+                <input type="password" id="password" name="password" required placeholder=" " />
+                <label for="password">Password</label>
+            </div>
+            <button type="submit" id="submitBtn">Start Bot</button>
+        </form>
+        <div id="verification-prompt"></div>
+        <input type="text" id="verification-input" placeholder="Enter verification info" />
+        <button id="submit-verification">Submit Verification</button>
+        <div id="result"></div>
+        <div id="logs"></div>
+    </div>
+    <div id="empty-space">
+        <i class="fas fa-trash dustbin-icon"></i> <!-- Dustbin Symbol -->
+    </div>
 
     <script>
         const { ipcRenderer } = require('electron');
 
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-
             const submitButton = document.getElementById("submitBtn");
             submitButton.disabled = true;
-
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
             try {
-                const result = await ipcRenderer.invoke("start-facebook-bot", {
-                    username,
-                    password,
-                });
-
-                if (result.success) {
-                    document.getElementById("result").innerText = "Bot process completed.";
-                    document.getElementById("loginForm").reset();
-                } else {
-                    document.getElementById("result").innerText = "Error: " + result.error;
-                }
+                const result = await ipcRenderer.invoke("start-twitter-bot", { username, password });
+                handleBotResult(result);
             } catch (error) {
                 document.getElementById("result").innerText = "Unexpected error: " + error.message;
             }
 
             submitButton.disabled = false;
+        });
+
+        function handleBotResult(result) {
+            if (result.success) {
+                document.getElementById("result").innerText = "Bot process completed.";
+                document.getElementById("loginForm").reset();
+            } else {
+                document.getElementById("result").innerText = "Error: " + result.error;
+            }
+        }
+
+        function showVerificationInput(prompt) {
+            document.getElementById('verification-prompt').innerText = prompt;
+            document.getElementById('verification-prompt').style.display = 'block';
+            document.getElementById('verification-input').style.display = 'block';
+            document.getElementById('submit-verification').style.display = 'block';
+        }
+
+        function hideVerificationInput() {
+            document.getElementById('verification-prompt').style.display = 'none';
+            document.getElementById('verification-input').style.display = 'none';
+            document.getElementById('submit-verification').style.display = 'none';
+        }
+
+        document.getElementById('submit-verification').addEventListener('click', () => {
+            const info = document.getElementById('verification-input').value;
+            ipcRenderer.send('submit-verification', info);
+            hideVerificationInput();
         });
 
         ipcRenderer.on("update-logs", (event, log) => {
@@ -71,16 +247,11 @@
             logsDiv.scrollTop = logsDiv.scrollHeight;
         });
 
-        ipcRenderer.on('show-2fa-input', () => {
-            document.getElementById('two-factor-code').style.display = 'block';
-            document.getElementById('submit-2fa-code').style.display = 'block';
-        });
-
-        document.getElementById('submit-2fa-code').addEventListener('click', () => {
-            const code = document.getElementById('two-factor-code').value;
-            ipcRenderer.send('submit-2fa-code', code);
-            document.getElementById('two-factor-code').style.display = 'none';
-            document.getElementById('submit-2fa-code').style.display = 'none';
+        ipcRenderer.on('show-verification-input', (event, prompt) => showVerificationInput(prompt));
+        
+        document.querySelector('.back-arrow').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = "index.html"; // Ensure "index.html" exists and is the correct path
         });
     </script>
 </body>

@@ -4,91 +4,103 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instagram Bot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Capriola:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Basic reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Body styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             padding: 20px;
+            flex-direction: column;
         }
 
         #container {
             width: 100%;
-            max-width: 400px; /* Adjust the max-width as needed */
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center; /* Center align text and elements inside container */
+            max-width: 400px;
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px; /* Padding between form and empty space section */
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #4d4d4d;
+            text-decoration: none;
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            font-family: 'Capriola', sans-serif;
+            color: #4d4d4d;
+            margin-bottom: 30px;
         }
 
-        /* Form element styles */
         form {
-            margin: 0; /* Remove margin */
+            margin: 0;
+            background-color: #F2F6FB;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        div {
+            margin-bottom: 20px; /* Reduced padding between form elements */
+            text-align: left;
             position: relative;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            outline: none;
-            background-color: #f9f9f9;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #007bff;
-        }
-
-        .form-group label {
+        label {
             position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px;
+            top: 10px;
+            left: 15px;
+            font-weight: bold;
             color: #999;
             transition: all 0.3s ease;
             pointer-events: none;
+            border-radius: 15px;
         }
 
-        .form-group input:focus + label,
-        .form-group input:not(:placeholder-shown) + label {
-            top: -10px;
-            left: 5px;
-            font-size: 12px;
-            color: #007bff;
+        input[type="text"],
+        input[type="password"],
+        input[type="text"]#two-factor-code {
+            width: calc(100% - 30px);
+            padding: 10px; /* Reduced padding */
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #ab47bc;
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -20px;
+            left: 15px;
+            color: transparent;
         }
 
         button {
-            background-color: #007bff;
-            color: #fff;
+            background-color: #991867;
+            color: white;
             border: none;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 15px;
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -96,7 +108,7 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #C13584;
         }
 
         button:disabled {
@@ -104,65 +116,124 @@
             cursor: not-allowed;
         }
 
-        /* Two-factor authentication input */
         #two-factor-code {
             display: block;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            margin-bottom: 15px;
+            padding: 10px; /* Reduced padding */
+            border-radius: 15px;
+            border: 1px solid #ccc;
             font-size: 16px;
         }
 
-        /* Logs section */
-        #logs {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
+        #submit-2fa-code {
+            display: block;
+            margin-top: 10px;
+        }
+
+        #empty-space {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: calc(100vh - 100px - 30px - 30px - 30px - 30px - 60px + 30px); /* Further increased height */
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .dustbin-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .dustbin-icon:hover {
+            color: #991867;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #991867;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            display: none; /* Initially hidden */
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tickmark-icon {
+            color: #28a745;
+            font-size: 24px;
+            display: none; /* Initially hidden */
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
     <div id="container">
         <h1>Instagram Bot</h1>
         <form id="loginForm">
-            <div class="form-group">
-                <input type="text" id="username" name="username" placeholder=" " required />
+            <div>
+                <input type="text" id="username" name="username" required placeholder=" " />
                 <label for="username">Username</label>
             </div>
-            <div class="form-group">
-                <input type="password" id="password" name="password" placeholder=" " required />
+            <div>
+                <input type="password" id="password" name="password" required placeholder=" " />
                 <label for="password">Password</label>
             </div>
             <button type="submit" id="submitBtn">Start Bot</button>
         </form>
         <input type="text" id="two-factor-code" placeholder="Enter 2FA Code" style="display: none;" />
         <button id="submit-2fa-code" style="display: none;">Submit 2FA Code</button>
-        <div id="result"></div>
-        <div id="logs"></div>
+    </div>
+    
+    <div id="empty-space">
+        <i class="fas fa-trash dustbin-icon"></i> <!-- Dustbin Symbol -->
+    </div>
+
+    <div id="loading-container" style="text-align: center; margin-top: 10px;">
+        <div class="loader"></div>
+        <i class="fas fa-check tickmark-icon"></i>
     </div>
 
     <script>
-        const { ipcRenderer } = require('electron');
-
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
 
             const submitButton = document.getElementById("submitBtn");
+            const loader = document.querySelector(".loader");
+            const tickmark = document.querySelector(".tickmark-icon");
+            
             submitButton.disabled = true;
+
+            // Show loader
+            loader.style.display = "inline-block";
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
             try {
-                const result = await ipcRenderer.invoke("start-instagram-bot", {
+                const result = await ipcRenderer.invoke("start-bot", {
                     username,
                     password,
                 });
 
                 if (result.success) {
+                    // Hide loader and show tickmark
+                    loader.style.display = "none";
+                    tickmark.style.display = "inline-block";
+
                     document.getElementById("result").innerText = "Bot process completed.";
                     document.getElementById("loginForm").reset();
                 } else if (result.error && result.error.includes("2FA code required")) {
@@ -175,27 +246,14 @@
                 document.getElementById("result").innerText = "Unexpected error: " + error.message;
             }
 
+            // Hide loader and enable the button after completion
+            loader.style.display = "none";
             submitButton.disabled = false;
         });
 
-        ipcRenderer.on("update-logs", (event, log) => {
-            const logsDiv = document.getElementById("logs");
-            const logElement = document.createElement("p");
-            logElement.innerText = log;
-            logsDiv.appendChild(logElement);
-            logsDiv.scrollTop = logsDiv.scrollHeight;
-        });
-
-        ipcRenderer.on('show-2fa-input', () => {
-            document.getElementById('two-factor-code').style.display = 'block';
-            document.getElementById('submit-2fa-code').style.display = 'block';
-        });
-
-        document.getElementById('submit-2fa-code').addEventListener('click', () => {
-            const code = document.getElementById('two-factor-code').value;
-            ipcRenderer.send('submit-2fa-code', code);
-            document.getElementById('two-factor-code').style.display = 'none';
-            document.getElementById('submit-2fa-code').style.display = 'none';
+        document.querySelector('.back-arrow').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = "index.html"; // Ensure "index.html" exists and is the correct path
         });
     </script>
 </body>

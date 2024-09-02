@@ -4,17 +4,129 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Twitter Bot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Capriola:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ... (previous styles remain unchanged) ... */
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #4d4d4d;
+            text-decoration: none;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-family: 'Capriola', sans-serif;
+            color: #4d4d4d;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin: 0;
+            background-color: #F2F6FB;
+        }
+
+        div {
+            margin-bottom: 20px; /* Reduced padding between form elements */
+            text-align: left;
+            position: relative;
+        }
+
+        label {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            border-radius: 15px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="text"]#verification-input {
+            width: calc(100% - 30px);
+            padding: 10px; /* Reduced padding */
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #ab47bc;
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -20px;
+            left: 15px;
+            color: transparent;
+        }
+
+        button {
+            background-color: #333; /* Greyish black */
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
 
         #verification-input {
             display: none;
             margin-bottom: 10px;
             padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 15px;
             font-size: 16px;
-            width: 100%;
+            width: calc(100% - 30px);
         }
 
         #submit-verification {
@@ -27,18 +139,44 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
+
+        #empty-space {
+            width: 100%;
+            max-width: 400px;
+            height: calc(100vh - 100px - 30px - 30px - 30px - 20px); /* Increased height */
+            background-color: #f3f4f6;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            margin-top: 0; /* No extra margin between form and empty space */
+            position: relative;
+        }
+
+        .dustbin-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .dustbin-icon:hover {
+            color: #333;
+        }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
     <div id="container">
         <h1>Twitter Bot</h1>
         <form id="loginForm">
-            <div class="form-group">
-                <input type="text" id="username" name="username" placeholder=" " required />
-                <label for="username">Username*(you have to give your username only)</label>
+            <div>
+                <input type="text" id="username" name="username" required placeholder=" " />
+                <label for="username">Username</label>
             </div>
-            <div class="form-group">
-                <input type="password" id="password" name="password" placeholder=" " required />
+            <div>
+                <input type="password" id="password" name="password" required placeholder=" " />
                 <label for="password">Password</label>
             </div>
             <button type="submit" id="submitBtn">Start Bot</button>
@@ -48,6 +186,9 @@
         <button id="submit-verification">Submit Verification</button>
         <div id="result"></div>
         <div id="logs"></div>
+    </div>
+    <div id="empty-space">
+        <i class="fas fa-trash dustbin-icon"></i> <!-- Dustbin Symbol -->
     </div>
 
     <script>
@@ -107,6 +248,11 @@
         });
 
         ipcRenderer.on('show-verification-input', (event, prompt) => showVerificationInput(prompt));
+        
+        document.querySelector('.back-arrow').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = "index.html"; // Ensure "index.html" exists and is the correct path
+        });
     </script>
 </body>
 </html>
