@@ -3,6 +3,7 @@ const path = require("path");
 const InstagramBot = require("./instagramBot");
 const FacebookBot = require("./facebookBot");
 const TwitterBot = require("./twitterBot");
+const WhatsAppBot = require("./whatsappBot");
 
 let mainWindow;
 
@@ -129,6 +130,32 @@ ipcMain.handle("start-twitter-bot", async (_event, { username, password }) => {
     return { success: false, error: error.message };
   }
 });
+
+function waitForQRScan(qrCodeDataUrl) {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send("show-qr-code", qrCodeDataUrl);
+    ipcMain.once("qr-code-scanned", () => {
+      resolve();
+    });
+  });
+}
+
+ipcMain.handle("start-whatsapp-bot", async () => {
+  const sendLog = (message) => {
+    mainWindow.webContents.send("update-logs", message);
+  };
+
+  try {
+    const bot = new WhatsAppBot(sendLog, waitForQRScan);
+    await bot.run();
+    return { success: true };
+  } catch (error) {
+    sendLog(`Error: ${error.message}`);
+    console.error("Error occurred in WhatsApp bot:", error);
+    return { success: false, error: error.message };
+  }
+});
+
 
 app.whenReady().then(() => {
   createWindow();
