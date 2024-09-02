@@ -35,7 +35,6 @@ class InstagramBot {
       .waitForNavigation({ waitUntil: "networkidle2" })
       .catch(() => {});
 
-    // Check for 2FA page
     if (this.page.url().includes("two_factor")) {
       this.sendLog("2FA page detected.");
       const code = await this.waitForTwoFactorCodei();
