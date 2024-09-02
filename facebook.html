@@ -16,7 +16,7 @@
 
         /* Body styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Capriola', sans-serif;
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             display: flex;
             justify-content: center;
@@ -27,14 +27,29 @@
             position: relative;
         }
 
+        /* Back arrow */
         .back-arrow {
             position: absolute;
             top: 20px;
             left: 20px;
             font-size: 24px;
-            cursor: pointer;
             color: #4d4d4d;
             text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .back-arrow:hover {
+            color: #000;
+        }
+
+        /* Responsive adjustment for back arrow */
+        @media (max-width: 600px) {
+            .back-arrow {
+                font-size: 20px;
+                top: 10px;
+                left: 10px;
+            }
         }
 
         #container {
@@ -49,7 +64,6 @@
         }
 
         h1 {
-            font-family: 'Capriola', sans-serif;
             color: #4d4d4d;
             margin-bottom: 20px;
         }
@@ -99,7 +113,7 @@
         }
 
         button {
-            background-color:#1877F2; /* Facebook blue */
+            background-color: #1877F2; /* Facebook blue */
             color: white;
             border: none;
             padding: 10px;
@@ -151,6 +165,14 @@
             position: relative;
         }
 
+        #logs-heading {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 18px;
+            color: #4d4d4d;
+        }
+
         .dustbin-icon {
             position: absolute;
             bottom: 10px;
@@ -167,7 +189,10 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
+    <!-- Back Arrow -->
+    <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+
+    <!-- Main Container -->
     <div id="container">
         <h1>Facebook Bot</h1>
         <form id="loginForm">
@@ -187,7 +212,10 @@
         <div id="result"></div>
         <div id="logs"></div>
     </div>
+
+    <!-- Empty Space Section -->
     <div id="empty-space">
+        <h2 id="logs-heading">Logs</h2> <!-- Logs heading -->
         <i class="fas fa-trash dustbin-icon"></i> <!-- Dustbin Symbol -->
     </div>
 

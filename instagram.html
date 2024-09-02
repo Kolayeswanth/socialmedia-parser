@@ -22,6 +22,7 @@
             height: 100vh;
             padding: 20px;
             flex-direction: column;
+            position: relative;
         }
 
         #container {
@@ -35,14 +36,21 @@
             margin-bottom: 20px; /* Padding between form and empty space section */
         }
 
+        /* Back arrow */
         .back-arrow {
             position: absolute;
             top: 20px;
             left: 20px;
             font-size: 24px;
-            cursor: pointer;
             color: #4d4d4d;
             text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 1000; /* Ensure it's on top */
+        }
+
+        .back-arrow:hover {
+            color: #000;
         }
 
         h1 {
@@ -139,6 +147,17 @@
             border-radius: 20px;
             border: 2px solid #ccc;
             margin-bottom: 20px;
+            text-align: left;
+            padding-left: 15px; /* Padding for "Logs" text */
+            padding-top: 10px;
+        }
+
+        #logs-heading {
+            font-family: 'Capriola', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: #4d4d4d;
+            margin-bottom: 10px;
         }
 
         .dustbin-icon {
@@ -177,10 +196,27 @@
             display: none; /* Initially hidden */
             margin-top: 10px;
         }
+
+        /* Responsive styling */
+        @media (max-width: 480px) {
+            .back-arrow {
+                font-size: 20px;
+                top: 10px;
+                left: 10px;
+            }
+
+            #container {
+                padding: 20px;
+            }
+
+            button {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
+    <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a> <!-- Back arrow symbol -->
     <div id="container">
         <h1>Instagram Bot</h1>
         <form id="loginForm">
@@ -199,6 +235,7 @@
     </div>
     
     <div id="empty-space">
+        <div id="logs-heading">Logs</div>
         <i class="fas fa-trash dustbin-icon"></i> <!-- Dustbin Symbol -->
     </div>
 

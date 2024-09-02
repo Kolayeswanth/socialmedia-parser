@@ -35,6 +35,7 @@
             cursor: pointer;
             color: #4d4d4d;
             text-decoration: none;
+            z-index: 1000; /* Ensure it's on top */
         }
 
         #container {
@@ -164,10 +165,27 @@
         .dustbin-icon:hover {
             color: #333;
         }
+
+        /* Responsive styling */
+        @media (max-width: 480px) {
+            .back-arrow {
+                font-size: 20px;
+                top: 10px;
+                left: 10px;
+            }
+
+            #container {
+                padding: 20px;
+            }
+
+            button {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-arrow">&#8592;</a> <!-- Back arrow symbol -->
+    <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a> <!-- Font Awesome arrow icon -->
     <div id="container">
         <h1>Twitter Bot</h1>
         <form id="loginForm">
