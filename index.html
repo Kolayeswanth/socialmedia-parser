@@ -70,7 +70,6 @@
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
       }
-
       .card {
         background: rgba(255, 255, 255, 0.8);
         border-radius: 15px;
@@ -78,8 +77,12 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.18);
         padding: 25px;
+        flex: 1 1 calc(50% - 10px);
+        min-width: 300px;
+        box-sizing: border-box;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
+
 
       .card:hover {
         transform: translateY(-5px);
@@ -269,6 +272,29 @@
         </div>
       </div>
     </div>
+    <script>
+      document.getElementById("whatsappCard").addEventListener("click", () => {
+          window.location.href = "whatsapp.html";
+      });
+
+    document.getElementById("instagramCard").addEventListener("click", () => {
+      window.location.href = "instagram.html";
+    });
+
+    document.getElementById("facebookCard").addEventListener("click", () => {
+      window.location.href = "facebook.html";
+    });
+
+    document.getElementById("twitterCard").addEventListener("click", () => {
+      window.location.href = "twitter.html";
+    });
+
+    document.getElementById("telegramCard").addEventListener("click", () => {
+      window.location.href = "twitter.html";
+    });
+      document.getElementById("googleCard").addEventListener("click", () => {
+      //add google location here
+    });
+  </script>
   </body>
 </html>
-
