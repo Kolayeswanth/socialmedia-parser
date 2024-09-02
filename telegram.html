@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .login-form {
+            margin-bottom: 20px;
+        }
+        #logs {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+    <h1>Telegram Bot</h1>
+    
+
+    <div class="login-form">
+        <h2>Telegram Login</h2>
+        <button onclick="startTelegramBot()">Start Telegram Bot</button>
+    </div>
+
+    <div id="qrCodeContainer" style="display: none;">
+        <h3>Scan QR Code</h3>
+        <img id="qrCodeImage" src="" alt="QR Code">
+        <button onclick="hideQRCode()">Hide QR Code</button>
+    </div>
+
+    <div id="logs"></div>
+
+    <script>
+        let telegramBot = null;
+
+        async function startTelegramBot() {
+            const sendLog = (message) => {
+                const logsContainer = document.getElementById('logs');
+                logsContainer.innerHTML += `<p>${message}</p>`;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            };
+
+            const waitForQRScan = async (qrCodeDataUrl) => {
+                document.getElementById('qrCodeImage').src = qrCodeDataUrl;
+                document.getElementById('qrCodeContainer').style.display = 'block';
+                await new Promise((resolve) => {
+                    const intervalId = setInterval(() => {
+                        if (document.getElementById('qrCodeImage').src !== qrCodeDataUrl) {
+                            clearInterval(intervalId);
+                            resolve();
+                        }
+                    }, 1000);
+                });
+            };
+
+            telegramBot = new TelegramBot(sendLog, waitForQRScan);
+            await telegramBot.run();
+        }
+
+        function hideQRCode() {
+            document.getElementById('qrCodeContainer').style.display = 'none';
+        }
+    </script>
+
+    <script src="telegramBot.js"></script>
+</body>
+</html>
