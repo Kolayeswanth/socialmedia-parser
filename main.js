@@ -1,9 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const fs = require("fs").promises;
+const puppeteer = require("puppeteer");
 const InstagramBot = require("./instagramBot");
 const FacebookBot = require("./facebookBot");
 const TwitterBot = require("./twitterBot");
 const WhatsAppBot = require("./whatsappBot");
+const TelegramBot = require("./telegramBot");
 
 let mainWindow;
 
@@ -29,7 +32,7 @@ function createWindow() {
   });
 }
 
-// Add this function to handle new window creation globally
+// Prevent new window creation globally
 app.on("web-contents-created", (event, contents) => {
   contents.on("new-window", (event, navigationUrl) => {
     event.preventDefault();
@@ -41,6 +44,7 @@ app.on("web-contents-created", (event, contents) => {
     return { action: "deny" };
   });
 });
+
 function waitForVerificationInput(prompt) {
   return new Promise((resolve) => {
     mainWindow.webContents.send("show-verification-input", prompt);
@@ -57,6 +61,7 @@ function waitForTwoFactorCode() {
     });
   });
 }
+
 function waitForTwoFactorCodei() {
   return new Promise((resolve) => {
     mainWindow.webContents.send("show-2fa-input");
@@ -65,6 +70,7 @@ function waitForTwoFactorCodei() {
     });
   });
 }
+
 ipcMain.handle(
   "start-instagram-bot",
   async (_event, { username, password }) => {
@@ -156,6 +162,22 @@ ipcMain.handle("start-whatsapp-bot", async () => {
   }
 });
 
+// Telegram bot handler, properly structured
+ipcMain.handle("start-telegram-bot", async (_event, { phoneNumber, password }) => {
+  const sendLog = (message) => {
+    mainWindow.webContents.send("update-logs", message);
+  };
+
+  try {
+    const bot = new TelegramBot(sendLog, waitForQRScan);
+    await bot.run();
+    return { success: true };
+  } catch (error) {
+    sendLog(`Error: ${error.message}`);
+    console.error("Error occurred in Telegram bot:", error);
+    return { success: false, error: error.message };
+  }
+});
 
 app.whenReady().then(() => {
   createWindow();
@@ -171,4 +193,12 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("quit", () => {
+  // Handle app quit event
+});
+
+ipcMain.on("quit-app", () => {
+  app.quit();
 });
