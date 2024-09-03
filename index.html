@@ -41,14 +41,14 @@
 
       .container {
         width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 20px;
+        max-width: none;
+        margin: 0;
+        padding: 40px 60px;
         box-sizing: border-box;
       }
 
       .content-header {
-        text-align: center;
+        text-align: left;
         margin-bottom: 40px;
       }
 
@@ -62,14 +62,15 @@
         font-size: 1.1em;
         color: #666;
         max-width: 600px;
-        margin: 0 auto;
+        margin: 0;
       }
 
       .cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 20px;
       }
+
       .card {
         background: rgba(255, 255, 255, 0.8);
         border-radius: 15px;
@@ -81,6 +82,10 @@
         min-width: 300px;
         box-sizing: border-box;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card.narrow {
+        flex: 1 1 calc(33.333% - 13.333px);
       }
 
       .card:hover {
@@ -162,6 +167,7 @@
       }
 
       @media (max-width: 768px) {
+        .card, .card.narrow { flex: 1 1 100%; }
         .header {
           flex-direction: column;
           align-items: flex-start;
@@ -258,10 +264,10 @@
             <button class="button twitter" id="twitterCard">Connect</button>
           </div>
         </div>
-        <div class="card">
+        <div class="card narrow">
           <div class="icon">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
+              src="https://play-lh.googleusercontent.com/aFWiT2lTa9CYBpyPjfgfNHd0r5puwKRGj2rHpdPTNrz2N9LXgN_MbLjePd1OTc0E8Rl1=w480-h960-rw"
               alt="Google"
             />
             <h3>Google</h3>
@@ -296,28 +302,25 @@
     </div>
 
     <script>
-      document.getElementById("whatsappCard").addEventListener("click", () => {
-          window.location.href = "whatsapp.html";
+        document.getElementById("whatsappCard").addEventListener("click", () => {
+            window.location.href = "whatsapp.html";
+        });
+
+      document.getElementById("instagramCard").addEventListener("click", () => {
+        window.location.href = "instagram.html";
       });
 
-    document.getElementById("instagramCard").addEventListener("click", () => {
-      window.location.href = "instagram.html";
-    });
+      document.getElementById("facebookCard").addEventListener("click", () => {
+        window.location.href = "facebook.html";
+      });
 
-    document.getElementById("facebookCard").addEventListener("click", () => {
-      window.location.href = "facebook.html";
-    });
+      document.getElementById("twitterCard").addEventListener("click", () => {
+        window.location.href = "twitter.html";
+      });
 
-    document.getElementById("twitterCard").addEventListener("click", () => {
-      window.location.href = "twitter.html";
-    });
-
-    document.getElementById("telegramCard").addEventListener("click", () => {
-      window.location.href = "twitter.html";
-    });
       document.getElementById("googleCard").addEventListener("click", () => {
-      //add google location here
-    });
-  </script>
+        // Add your Google redirect logic here
+      });
+    </script>
   </body>
 </html>

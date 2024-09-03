@@ -3,16 +3,15 @@ const fs = require("fs").promises;
 const path = require("path");
 
 class FacebookBot {
-  constructor(username, password, sendLog, waitForTwoFactorCode) {
+  constructor(username, password, sendLog) {
     this.username = username;
     this.password = password;
     this.sendLog = sendLog;
-    this.waitForTwoFactorCode = waitForTwoFactorCode;
   }
 
   async init() {
     this.browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
       defaultViewport: null,
     });
@@ -42,40 +41,27 @@ class FacebookBot {
     await this.page.type("#pass", this.password, { delay: 100 });
     await this.page.click('button[name="login"]');
 
-    await this.page.waitForNavigation({ waitUntil: "networkidle2" });
+    // Wait for navigation or potential 2FA page
+    await Promise.race([
+      this.page.waitForNavigation({ waitUntil: "networkidle2" }),
+      this.page.waitForSelector('input[name="approvals_code"]', { visible: true, timeout: 10000 }).catch(() => null)
+    ]);
+
+    // Check if we're still on the login page (indicating login error)
+    if (this.page.url().includes("login")) {
+      throw new Error("Login failed. Please check your credentials.");
+    }
 
     // Check for 2FA page
     if (this.page.url().includes("checkpoint")) {
-      this.sendLog("2FA page detected.");
+      this.sendLog("2FA page detected. Waiting for user to approve login from another device...");
 
-      // Wait for the 2FA input field to appear
-      await this.page.waitForSelector('input[name="approvals_code"]', {
-        visible: true,
-      });
+      // Wait for navigation away from the checkpoint page
+      await this.page.waitForNavigation({ waitUntil: "networkidle2", timeout: 300000 }); // 5-minute timeout
 
-      const code = await this.waitForTwoFactorCode();
-      await this.page.type('input[name="approvals_code"]', code, {
-        delay: 100,
-      });
-
-      // Click the "Continue" button
-      await this.page.click('button[type="submit"]');
-
-      // Wait for navigation after submitting 2FA code
-      await this.page.waitForNavigation({ waitUntil: "networkidle2" });
-
-      // Check if there's a "Save Browser" option and click "Don't Save"
-      try {
-        await this.page.waitForSelector('button[value="dont_save"]', {
-          timeout: 5000,
-        });
-        await this.page.click('button[value="dont_save"]');
-        await this.page.waitForNavigation({ waitUntil: "networkidle2" });
-      } catch (error) {
-        this.sendLog("No 'Save Browser' prompt found. Continuing...");
+      if (this.page.url().includes("checkpoint")) {
+        throw new Error("2FA approval timed out or failed.");
       }
-
-      this.sendLog("2FA code entered and submitted.");
     }
 
     if (this.page.url().includes("facebook.com")) {
@@ -91,31 +77,20 @@ class FacebookBot {
   async handleNotificationPrompts() {
     this.sendLog("Handling notification prompts...");
 
-    // List of possible selectors for notification dismiss buttons
     const notificationDismissSelectors = [
-      'button[data-testid="negative-action-button"]', // "Not Now" button
+      'button[data-testid="negative-action-button"]',
       'button[action="cancel"]',
       'button[value="decline"]',
       '[aria-label="Close"]',
-      // Add more selectors as needed
     ];
 
     for (const selector of notificationDismissSelectors) {
       try {
-        // Wait for the selector to appear
         await this.page.waitForSelector(selector, { timeout: 5000 });
-
-        // Click the dismiss button
         await this.page.click(selector);
-
-        this.sendLog(
-          `Dismissed notification prompt using selector: ${selector}`
-        );
-
-        // Wait a bit for any animations or page changes
+        this.sendLog(`Dismissed notification prompt using selector: ${selector}`);
         await this.page.waitForTimeout(1000);
       } catch (error) {
-        // If the selector is not found, it's not an error, just continue to the next one
         continue;
       }
     }
