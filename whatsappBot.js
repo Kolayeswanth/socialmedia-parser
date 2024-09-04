@@ -28,11 +28,21 @@ class WhatsAppBot {
 
   async launch() {
     this.sendLog('Launching browser...');
-    this.browser = await puppeteer.launch({ 
+    this.browser = await puppeteer.launch({
       headless: false,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage'
+      ]
     });
+
     this.page = await this.browser.newPage();
+
+    this.page.on('console', msg => this.sendLog(`PAGE LOG: ${msg.text()}`));
+    this.page.on('error', err => this.sendLog(`PAGE ERROR: ${err.message}`));
+    this.page.on('pageerror', err => this.sendLog(`PAGE PAGEERROR: ${err.message}`));
+
     this.sendLog('Browser launched successfully');
   }
 
@@ -41,41 +51,42 @@ class WhatsAppBot {
     await this.page.goto('https://web.whatsapp.com/', { waitUntil: 'networkidle0' });
     await this.page.setDefaultTimeout(120000); // Increase timeout to 2 minutes
   
+
     this.sendLog('Waiting for QR code...');
     const qrCodeDataUrl = await this.getQRCode();
     this.sendLog('QR code generated. Please scan with your phone.');
-  
+
     await this.waitForQRScan(qrCodeDataUrl);
     this.sendLog('Waiting for login...');
-    
+
     await this.waitForLogin();
     this.sendLog('Successfully logged in to WhatsApp Web');
   }
-  
+
   async waitForLogin() {
     this.sendLog('Waiting for login to complete...');
     try {
-        await this.page.waitForFunction(() => {
-            const searchBox = document.querySelector('div.x1hx0egp[contenteditable="true"]');
-            return searchBox !== null;
-        }, { timeout: 90000 });
+      await this.page.waitForFunction(() => {
+        const searchBox = document.querySelector('div.x1hx0egp[contenteditable="true"]');
+        return searchBox !== null;
+      }, { timeout: 90000 });
 
-        const isLoggedIn = await this.page.evaluate(() => {
-            const searchBox = document.querySelector('div.x1hx0egp[contenteditable="true"]');
-            return searchBox !== null;
-        });
+      const isLoggedIn = await this.page.evaluate(() => {
+        const searchBox = document.querySelector('div.x1hx0egp[contenteditable="true"]');
+        return searchBox !== null;
+      });
 
-        if (isLoggedIn) {
-            this.sendLog('Successfully logged in to WhatsApp Web. Chats loaded.');
-        } else {
-            throw new Error('Login failed. Search box not found.');
-        }
+      if (isLoggedIn) {
+        this.sendLog('Successfully logged in to WhatsApp Web. Chats loaded.');
+      } else {
+        throw new Error('Login failed. Search box not found.');
+      }
     } catch (error) {
-        this.sendLog('Login failed. Please make sure you scanned the QR code correctly and your internet connection is stable.');
-        throw new Error('Login failed.');
+      this.sendLog('Login failed. Please make sure you scanned the QR code correctly and your internet connection is stable.');
+      throw new Error('Login failed.');
     }
   }
-  
+
   async getQRCode() {
     try {
       await this.page.waitForSelector('canvas', { timeout: 60000 });

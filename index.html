@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';"> -->
     <title>Social Media Parser</title>
     <style>
       body {
@@ -41,14 +42,14 @@
 
       .container {
         width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 40px 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
         box-sizing: border-box;
       }
 
       .content-header {
-        text-align: left;
+        text-align: center;
         margin-bottom: 40px;
       }
 
@@ -62,15 +63,14 @@
         font-size: 1.1em;
         color: #666;
         max-width: 600px;
-        margin: 0;
+        margin: 0 auto;
       }
 
       .cards-container {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
       }
-
       .card {
         background: rgba(255, 255, 255, 0.8);
         border-radius: 15px;
@@ -82,10 +82,6 @@
         min-width: 300px;
         box-sizing: border-box;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .card.narrow {
-        flex: 1 1 calc(33.333% - 13.333px);
       }
 
       .card:hover {
@@ -167,7 +163,6 @@
       }
 
       @media (max-width: 768px) {
-        .card, .card.narrow { flex: 1 1 100%; }
         .header {
           flex-direction: column;
           align-items: flex-start;
@@ -250,7 +245,7 @@
         <div class="card">
           <div class="icon">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Twitter_Logo_as_of_2021.svg"
+              src="https://cdn.punchng.com/wp-content/uploads/2023/07/24084806/Twitter-new-logo.jpeg"
               alt="Twitter"
             />
             <h3>Twitter</h3>
@@ -264,10 +259,10 @@
             <button class="button twitter" id="twitterCard">Connect</button>
           </div>
         </div>
-        <div class="card narrow">
+        <div class="card">
           <div class="icon">
             <img
-              src="https://play-lh.googleusercontent.com/aFWiT2lTa9CYBpyPjfgfNHd0r5puwKRGj2rHpdPTNrz2N9LXgN_MbLjePd1OTc0E8Rl1=w480-h960-rw"
+              src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
               alt="Google"
             />
             <h3>Google</h3>
@@ -302,25 +297,28 @@
     </div>
 
     <script>
-        document.getElementById("whatsappCard").addEventListener("click", () => {
-            window.location.href = "whatsapp.html";
-        });
-
-      document.getElementById("instagramCard").addEventListener("click", () => {
-        window.location.href = "instagram.html";
+      document.getElementById("whatsappCard").addEventListener("click", () => {
+          window.location.href = "whatsapp.html";
       });
 
-      document.getElementById("facebookCard").addEventListener("click", () => {
-        window.location.href = "facebook.html";
-      });
+    document.getElementById("instagramCard").addEventListener("click", () => {
+      window.location.href = "instagram.html";
+    });
 
-      document.getElementById("twitterCard").addEventListener("click", () => {
-        window.location.href = "twitter.html";
-      });
+    document.getElementById("facebookCard").addEventListener("click", () => {
+      window.location.href = "facebook.html";
+    });
 
+    document.getElementById("twitterCard").addEventListener("click", () => {
+      window.location.href = "twitter.html";
+    });
+
+    document.getElementById("telegramCard").addEventListener("click", () => {
+      window.location.href = "telegram.html";
+    });
       document.getElementById("googleCard").addEventListener("click", () => {
-        // Add your Google redirect logic here
+        window.location.href = "google.html";
       });
-    </script>
+  </script>
   </body>
 </html>
