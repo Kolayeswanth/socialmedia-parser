@@ -1,6 +1,13 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs").promises;
 const path = require("path");
+class Filters {
+  constructor(posts = true, likes = true, friends = true) {
+    this.posts = posts;
+    this.likes = likes;
+    this.friends = friends;
+  }
+}
 
 class FacebookBot {
   constructor(username, password, sendLog) {
