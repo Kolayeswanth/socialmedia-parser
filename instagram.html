@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instagram Bot</title>
     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(79.8deg, rgb(101, 132, 154) 3.2%, rgb(160, 197, 201) 89.1%);
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(97, 129, 199, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #10183a;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-links a {
+            text-decoration: none;
+            color: #4e4dac;
+            font-weight: bold;
+        }
+
         /* Basic reset */
         * {
             margin: 0;
@@ -12,26 +48,17 @@
             box-sizing: border-box;
         }
 
-        /* Body styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-        }
-
+        /* Container styles */
         #container {
             width: 100%;
-            max-width: 400px; /* Adjust the max-width as needed */
+            max-width: 400px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            text-align: center; /* Center align text and elements inside container */
+            margin: auto; /* Center the container */
+            margin-top: 40px; /* Add spacing from the top */
+            text-align: center;
         }
 
         h1 {
@@ -125,6 +152,14 @@
     </style>
 </head>
 <body>
+    <header class="header">
+        <h1>Social Media Parser</h1>
+        <div class="header-links">
+            <a href="#tools">Tools</a>
+            <a href="#documentation">Documentation</a>
+            <a href="#help">Help</a>
+        </div>
+    </header>
     <div id="container">
         <h1>Instagram Bot</h1>
         <form id="loginForm">

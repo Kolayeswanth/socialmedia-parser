@@ -1,10 +1,43 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Login</title>
     <style>
+          body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+      }
+
+      .header {
+        background: linear-gradient(79.8deg, rgb(101, 132, 154) 3.2%, rgb(160, 197, 201) 89.1%);
+        padding: 20px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(97, 129, 199, 0.1);
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 1.5em;
+        color: #10183a;
+      }
+
+      .header-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .header-links a {
+        text-decoration: none;
+        color: #4e4dac;
+        font-weight: bold;
+      }
         #logs {
             border: 1px solid #ccc;
             padding: 10px;
@@ -47,6 +80,14 @@
     </style>
 </head>
 <body>
+    <header class="header">
+        <h1>Social Media Parser</h1>
+        <div class="header-links">
+          <a href="#tools">Tools</a>
+          <a href="#documentation">Documentation</a>
+          <a href="#help">Help</a>
+        </div>
+      </header>
     <h1>WhatsApp Login</h1>
     <div>
         <button id="loginWithQR">Login with QR Code</button>

@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';"> -->
     <title>Social Media Parser</title>
     <style>
       body {
@@ -15,18 +14,18 @@
       }
 
       .header {
-        background-color: #ffffff;
+        background: linear-gradient(79.8deg, rgb(101, 132, 154) 3.2%, rgb(160, 197, 201) 89.1%);
         padding: 20px 60px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px rgba(97, 129, 199, 0.1);
       }
 
       .header h1 {
         margin: 0;
         font-size: 1.5em;
-        color: #333;
+        color: #10278d;
       }
 
       .header-links {
@@ -36,20 +35,20 @@
 
       .header-links a {
         text-decoration: none;
-        color: #333;
+        color: #4e4dac;
         font-weight: bold;
       }
 
       .container {
         width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 20px;
+        max-width: none;
+        margin: 0;
+        padding: 40px 60px;
         box-sizing: border-box;
       }
 
       .content-header {
-        text-align: center;
+        text-align: left;
         margin-bottom: 40px;
       }
 
@@ -63,25 +62,42 @@
         font-size: 1.1em;
         color: #666;
         max-width: 600px;
-        margin: 0 auto;
+        margin: 0;
       }
 
       .cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      } 
+
+       .card {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 25px;
+      flex: 1 1 calc(33.333% - 20px);
+      min-width: 300px;
+      box-sizing: border-box;
+      transition: transform 0.3s ease, box-shadow 0.3s ease; 
       }
-      .card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        padding: 25px;
-        flex: 1 1 calc(50% - 10px);
-        min-width: 300px;
-        box-sizing: border-box;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
+      }
+
+       @media (max-width: 768px) {
+      .card, .card.narrow { 
+       flex: 1 1 100%; 
+      }
+     }
+
+      .card.narrow {
+        flex: 1 1 calc(33.333% - 13.333px);
       }
 
       .card:hover {
@@ -163,6 +179,7 @@
       }
 
       @media (max-width: 768px) {
+        .card, .card.narrow { flex: 1 1 100%; }
         .header {
           flex-direction: column;
           align-items: flex-start;
@@ -245,7 +262,7 @@
         <div class="card">
           <div class="icon">
             <img
-              src="https://cdn.punchng.com/wp-content/uploads/2023/07/24084806/Twitter-new-logo.jpeg"
+              src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Twitter_Logo_as_of_2021.svg"
               alt="Twitter"
             />
             <h3>Twitter</h3>
@@ -259,10 +276,10 @@
             <button class="button twitter" id="twitterCard">Connect</button>
           </div>
         </div>
-        <div class="card">
+        <div class="card narrow">
           <div class="icon">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
+              src="https://play-lh.googleusercontent.com/aFWiT2lTa9CYBpyPjfgfNHd0r5puwKRGj2rHpdPTNrz2N9LXgN_MbLjePd1OTc0E8Rl1=w480-h960-rw"
               alt="Google"
             />
             <h3>Google</h3>
@@ -286,9 +303,9 @@
           </div>
           <div class="content">
             <p>
-              Extract and analyze messages, channels, and group conversations
-              from Telegram. Ensure secure and accurate data collection for
-              forensic analysis.
+             Access Telegram services like posts,searches,and screenshots.
+             Gathers and analyses user data for comprehensive digital
+             investigations
             </p>
             <button class="button telegram" id="telegramCard">Connect</button>
           </div>
@@ -297,28 +314,27 @@
     </div>
 
     <script>
-      document.getElementById("whatsappCard").addEventListener("click", () => {
-          window.location.href = "whatsapp.html";
+        document.getElementById("whatsappCard").addEventListener("click", () => {
+            window.location.href = "whatsapp.html";
+        });
+
+      document.getElementById("instagramCard").addEventListener("click", () => {
+        window.location.href = "instagram.html";
       });
 
-    document.getElementById("instagramCard").addEventListener("click", () => {
-      window.location.href = "instagram.html";
-    });
+      document.getElementById("facebookCard").addEventListener("click", () => {
+        window.location.href = "facebook.html";
+      });
 
-    document.getElementById("facebookCard").addEventListener("click", () => {
-      window.location.href = "facebook.html";
-    });
-
-    document.getElementById("twitterCard").addEventListener("click", () => {
-      window.location.href = "twitter.html";
-    });
-
-    document.getElementById("telegramCard").addEventListener("click", () => {
-      window.location.href = "telegram.html";
-    });
+      document.getElementById("twitterCard").addEventListener("click", () => {
+        window.location.href = "twitter.html";
+      });
+      document.getElementById("telegramCard").addEventListener("click", () => {
+        window.location.href = "telegram.html";
+      });
       document.getElementById("googleCard").addEventListener("click", () => {
-        window.location.href = "google.html";
+        // Add your Google redirect logic here
       });
-  </script>
+    </script>
   </body>
 </html>

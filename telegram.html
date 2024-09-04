@@ -3,12 +3,42 @@
 <head>
     <title>Telegram Bot</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+         body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        .header {
+            background: linear-gradient(79.8deg, rgb(80, 138, 180) 3.2%, rgb(160, 180, 195) 89.1%);
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(152, 158, 170, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #2f3f8f;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-links a {
+            text-decoration: none;
+            color: #c7c6ec;
+            font-weight: bold;
+        }
+
         .login-form {
             margin-bottom: 20px;
         }
@@ -18,20 +48,26 @@
             height: 200px;
             overflow-y: scroll;
         }
-        #qrCodeContainer {
-            display: none;
-        }
     </style>
 </head>
 <body>
+    <header class="header">
+        <h1>Social Media Parser</h1>
+        <div class="header-links">
+          <a href="#tools">Tools</a>
+          <a href="#documentation">Documentation</a>
+          <a href="#help">Help</a>
+        </div>
+      </header>
     <h1>Telegram Bot</h1>
+    
 
     <div class="login-form">
         <h2>Telegram Login</h2>
         <button onclick="startTelegramBot()">Start Telegram Bot</button>
     </div>
 
-    <div id="qrCodeContainer">
+    <div id="qrCodeContainer" style="display: none;">
         <h3>Scan QR Code</h3>
         <img id="qrCodeImage" src="" alt="QR Code">
         <button onclick="hideQRCode()">Hide QR Code</button>
@@ -40,39 +76,37 @@
     <div id="logs"></div>
 
     <script>
-        function startTelegramBot() {
-            if (window.electronAPI && typeof window.electronAPI.startTelegramBot === 'function') {
-                window.electronAPI.startTelegramBot();
-            } else {
-                console.error('Electron API is not available.');
-            }
-        }
+        let telegramBot = null;
 
-        window.electronAPI.onLogMessage((event, message) => {
-            const logsContainer = document.getElementById('logs');
-            if (logsContainer) {
-                logsContainer.innerHTML += `<p>${message}</p>`;
+        async function startTelegramBot() {
+            const sendLog = (message) => {
+                const logsContainer = document.getElementById('logs');
+                logsContainer.innerHTML += <p>${message}</p>;
                 logsContainer.scrollTop = logsContainer.scrollHeight;
-            } else {
-                console.error("Logs container not found.");
-            }
-        });
+            };
 
-        window.electronAPI.onShowQRCode((event, qrCodeDataUrl) => {
-            const qrCodeImage = document.getElementById('qrCodeImage');
-            const qrCodeContainer = document.getElementById('qrCodeContainer');
-            if (qrCodeImage && qrCodeContainer) {
-                qrCodeImage.src = qrCodeDataUrl;
-                qrCodeContainer.style.display = 'block';
-            } else {
-                console.error("QR code elements not found.");
-            }
-        });
+            const waitForQRScan = async (qrCodeDataUrl) => {
+                document.getElementById('qrCodeImage').src = qrCodeDataUrl;
+                document.getElementById('qrCodeContainer').style.display = 'block';
+                await new Promise((resolve) => {
+                    const intervalId = setInterval(() => {
+                        if (document.getElementById('qrCodeImage').src !== qrCodeDataUrl) {
+                            clearInterval(intervalId);
+                            resolve();
+                        }
+                    }, 1000);
+                });
+            };
+
+            telegramBot = new TelegramBot(sendLog, waitForQRScan);
+            await telegramBot.run();
+        }
 
         function hideQRCode() {
             document.getElementById('qrCodeContainer').style.display = 'none';
-            window.electronAPI.qrCodeScanned();
         }
     </script>
+
+    <script src="telegramBot.js"></script>
 </body>
 </html>
