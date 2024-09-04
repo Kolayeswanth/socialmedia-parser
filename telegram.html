@@ -18,18 +18,20 @@
             height: 200px;
             overflow-y: scroll;
         }
+        #qrCodeContainer {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>Telegram Bot</h1>
-    
 
     <div class="login-form">
         <h2>Telegram Login</h2>
         <button onclick="startTelegramBot()">Start Telegram Bot</button>
     </div>
 
-    <div id="qrCodeContainer" style="display: none;">
+    <div id="qrCodeContainer">
         <h3>Scan QR Code</h3>
         <img id="qrCodeImage" src="" alt="QR Code">
         <button onclick="hideQRCode()">Hide QR Code</button>
@@ -38,37 +40,39 @@
     <div id="logs"></div>
 
     <script>
-        let telegramBot = null;
+        function startTelegramBot() {
+            if (window.electronAPI && typeof window.electronAPI.startTelegramBot === 'function') {
+                window.electronAPI.startTelegramBot();
+            } else {
+                console.error('Electron API is not available.');
+            }
+        }
 
-        async function startTelegramBot() {
-            const sendLog = (message) => {
-                const logsContainer = document.getElementById('logs');
+        window.electronAPI.onLogMessage((event, message) => {
+            const logsContainer = document.getElementById('logs');
+            if (logsContainer) {
                 logsContainer.innerHTML += `<p>${message}</p>`;
                 logsContainer.scrollTop = logsContainer.scrollHeight;
-            };
+            } else {
+                console.error("Logs container not found.");
+            }
+        });
 
-            const waitForQRScan = async (qrCodeDataUrl) => {
-                document.getElementById('qrCodeImage').src = qrCodeDataUrl;
-                document.getElementById('qrCodeContainer').style.display = 'block';
-                await new Promise((resolve) => {
-                    const intervalId = setInterval(() => {
-                        if (document.getElementById('qrCodeImage').src !== qrCodeDataUrl) {
-                            clearInterval(intervalId);
-                            resolve();
-                        }
-                    }, 1000);
-                });
-            };
-
-            telegramBot = new TelegramBot(sendLog, waitForQRScan);
-            await telegramBot.run();
-        }
+        window.electronAPI.onShowQRCode((event, qrCodeDataUrl) => {
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            if (qrCodeImage && qrCodeContainer) {
+                qrCodeImage.src = qrCodeDataUrl;
+                qrCodeContainer.style.display = 'block';
+            } else {
+                console.error("QR code elements not found.");
+            }
+        });
 
         function hideQRCode() {
             document.getElementById('qrCodeContainer').style.display = 'none';
+            window.electronAPI.qrCodeScanned();
         }
     </script>
-
-    <script src="telegramBot.js"></script>
 </body>
 </html>
