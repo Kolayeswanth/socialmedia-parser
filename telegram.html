@@ -76,12 +76,18 @@
     <div id="logs"></div>
 
     <script>
-        let telegramBot = null;
+        function startTelegramBot() {
+            if (window.electronAPI && typeof window.electronAPI.startTelegramBot === 'function') {
+                window.electronAPI.startTelegramBot();
+            } else {
+                console.error('Electron API is not available.');
+            }
+        }
 
-        async function startTelegramBot() {
-            const sendLog = (message) => {
-                const logsContainer = document.getElementById('logs');
-                logsContainer.innerHTML += <p>${message}</p>;
+        window.electronAPI.onLogMessage((event, message) => {
+            const logsContainer = document.getElementById('logs');
+            if (logsContainer) {
+                logsContainer.innerHTML += `<p>${message}</p>`;
                 logsContainer.scrollTop = logsContainer.scrollHeight;
             };
 

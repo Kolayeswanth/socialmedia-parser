@@ -44,6 +44,9 @@
         max-width: none;
         margin: 0;
         padding: 40px 60px;
+        max-width: none;
+        margin: 0;
+        padding: 40px 60px;
         box-sizing: border-box;
       }
 
@@ -66,38 +69,21 @@
       }
 
       .cards-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: space-between;
-      } 
-
-       .card {
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 15px;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 25px;
-      flex: 1 1 calc(33.333% - 20px);
-      min-width: 300px;
-      box-sizing: border-box;
-      transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
       }
-
-      .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
-      }
-
-       @media (max-width: 768px) {
-      .card, .card.narrow { 
-       flex: 1 1 100%; 
-      }
-     }
-
-      .card.narrow {
-        flex: 1 1 calc(33.333% - 13.333px);
+      .card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 25px;
+        flex: 1 1 calc(50% - 10px);
+        min-width: 300px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
 
       .card:hover {
@@ -326,12 +312,13 @@
         window.location.href = "facebook.html";
       });
 
-      document.getElementById("twitterCard").addEventListener("click", () => {
-        window.location.href = "twitter.html";
-      });
-      document.getElementById("telegramCard").addEventListener("click", () => {
-        window.location.href = "telegram.html";
-      });
+    document.getElementById("twitterCard").addEventListener("click", () => {
+      window.location.href = "twitter.html";
+    });
+
+    document.getElementById("telegramCard").addEventListener("click", () => {
+      window.location.href = "telegram.html";
+    });
       document.getElementById("googleCard").addEventListener("click", () => {
         // Add your Google redirect logic here
       });

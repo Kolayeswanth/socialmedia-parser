@@ -89,7 +89,7 @@ class TwitterBot {
   
     } catch (error) {
       this.sendLog("Login error: " + error.message);
-      await this.page.screenshot({ path: path.join(__dirname, 'login-error.png') });
+      await this.page.screenshot({ path: 'login-error.png' });
       throw error;
     }
   }
@@ -128,14 +128,10 @@ class TwitterBot {
   }
 
   async takeFullPageScreenshot(fileName) {
-    try {
-      const screenshotPath = path.join(__dirname, "files", "twitter", this.username, fileName + ".png");
-      await fs.mkdir(path.dirname(screenshotPath), { recursive: true });
-      await this.page.screenshot({ path: screenshotPath, fullPage: true });
-      this.sendLog("Screenshot saved: " + fileName);
-    } catch (error) {
-      this.sendLog("Error taking full-page screenshot: " + error.message);
-    }
+    const screenshotPath = path.join(__dirname, "files", "twitter", this.username, fileName + ".png");
+    await fs.mkdir(path.dirname(screenshotPath), { recursive: true });
+    await this.page.screenshot({ path: screenshotPath, fullPage: true });
+    this.sendLog("Screenshot saved: " + fileName);
   }
 
   async takeProfileScreenshot(username) {
@@ -155,6 +151,7 @@ class TwitterBot {
       // Wait for the list to load completely
       await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
       await this.delay(5000);  // Additional delay to ensure all elements are loaded
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
       await this.takeFullPageScreenshot("followers");
 
       // Capture following list
@@ -163,6 +160,7 @@ class TwitterBot {
 
       // Wait for the list to load completely
       await this.page.waitForSelector('div[data-testid="primaryColumn"]', { timeout: 60000 });
+      await this.delay(5000);  // Additional delay to ensure all elements are loaded
       await this.delay(5000);  // Additional delay to ensure all elements are loaded
       await this.takeFullPageScreenshot("following");
 
@@ -181,7 +179,7 @@ class TwitterBot {
       this.sendLog("Profile page loaded successfully.");
     } catch (error) {
       this.sendLog("Error loading profile page: " + error.message);
-      await this.page.screenshot({ path: path.join(__dirname, 'profile-loading-error.png') });
+      await this.page.screenshot({ path: 'profile-loading-error.png' });
       throw new Error("Failed to load profile page.");
     }
   }
