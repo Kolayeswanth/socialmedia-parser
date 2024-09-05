@@ -41,12 +41,9 @@
 
       .container {
         width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 40px 60px;
-        max-width: none;
-        margin: 0;
-        padding: 40px 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
         box-sizing: border-box;
       }
 
@@ -69,10 +66,11 @@
       }
 
       .cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 20px;
       }
+
       .card {
         background: rgba(255, 255, 255, 0.8);
         border-radius: 15px;
@@ -84,6 +82,10 @@
         min-width: 300px;
         box-sizing: border-box;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card.narrow {
+        flex: 1 1 calc(33.333% - 13.333px);
       }
 
       .card:hover {
@@ -312,13 +314,10 @@
         window.location.href = "facebook.html";
       });
 
-    document.getElementById("twitterCard").addEventListener("click", () => {
-      window.location.href = "twitter.html";
-    });
+      document.getElementById("twitterCard").addEventListener("click", () => {
+        window.location.href = "twitter.html";
+      });
 
-    document.getElementById("telegramCard").addEventListener("click", () => {
-      window.location.href = "telegram.html";
-    });
       document.getElementById("googleCard").addEventListener("click", () => {
         // Add your Google redirect logic here
       });
