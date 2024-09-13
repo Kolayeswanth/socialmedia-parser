@@ -1,12 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-const fs = require("fs").promises;
-const puppeteer = require("puppeteer");
-const InstagramBot = require("./instagramBot");
-const FacebookBot = require("./facebookBot");
-const TwitterBot = require("./twitterBot");
-const WhatsAppBot = require("./whatsappBot");
-const TelegramBot = require("./telegramBot");
+const InstagramBot = require("./src/instagramBot");
+const FacebookBot = require("./src/facebookBot");
+const TwitterBot = require("./src/twitterBot");
+const WhatsAppBot = require("./src/whatsappBot");
+const TelegramBot = require("./src/telegramBot");
 
 let mainWindow;
 
@@ -25,25 +23,7 @@ function createWindow() {
     console.error("Failed to load index.html:", err);
   });
 
-  // Prevent new window creation
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    console.log("Prevented new window:", url);
-    return { action: "deny" };
-  });
 }
-
-// Prevent new window creation globally
-app.on("web-contents-created", (event, contents) => {
-  contents.on("new-window", (event, navigationUrl) => {
-    event.preventDefault();
-    console.log("Prevented new window:", navigationUrl);
-  });
-
-  contents.setWindowOpenHandler(({ url }) => {
-    console.log("Prevented new window:", url);
-    return { action: "deny" };
-  });
-});
 
 function waitForVerificationInput(prompt) {
   return new Promise((resolve) => {
